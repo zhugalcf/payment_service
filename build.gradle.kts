@@ -17,20 +17,9 @@ dependencies {
     /**
      * Spring boot starters
      */
-    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
-    /**
-     * Database
-     */
-    implementation("org.liquibase:liquibase-core")
-    implementation("redis.clients:jedis:4.3.2")
-    runtimeOnly("org.postgresql:postgresql")
 
     /**
      * Utils & Logging
@@ -42,13 +31,6 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
-
-    /**
-     * Test containers
-     */
-    implementation(platform("org.testcontainers:testcontainers-bom:1.17.6"))
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:postgresql")
 
     /**
      * Tests
