@@ -4,3 +4,8 @@ server:
 logging:
   level:
     root: info
+
+currency:
+  rate:
+    fetch:
+      cron: 0 3 * * * *  #обновление каждый день в 3 ночи
