@@ -18,6 +18,7 @@ dependencies {
     /**
      * Spring boot starters
      */
+    implementation ("org.springframework.retry:spring-retry:1.3.1")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
