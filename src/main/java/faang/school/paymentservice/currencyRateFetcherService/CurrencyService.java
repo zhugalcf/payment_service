@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class CurrencyService {
     private final WebClient webClient;
-    private final Map<String, Double> currencyMap = new ConcurrentHashMap<>();
+    private final Map<String, Double> currencyMap = new ConcurrentHashMap<>(); //валюта -
 
     public CurrencyService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl("https://api.exchangeratesapi.io").build();
@@ -23,7 +23,7 @@ public class CurrencyService {
     @Retryable(maxAttempts = 2, backoff = @Backoff(delay = 1000)) // повторить до 2-х раз и с задержкой 1 сек.
     public void fetchAndSaveCurrencyData() {
         CurrencyData currencyData = webClient.get()
-                .uri("/latest") // путь к API для получения курсов валют
+                .uri("/latest?access_key=e63ab22d6e2b5fc267fc5c59237b020a&base=USD&symbols=EUR,RUB,GBP,JPY") // путь к API для получения курсов валют относительно USD
                 .retrieve()
                 .bodyToMono(CurrencyData.class)
                 .block(); // перестаем получать курсы валют
