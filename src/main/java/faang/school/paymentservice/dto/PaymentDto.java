@@ -6,5 +6,5 @@ import lombok.Data;
 public class PaymentDto {
     private Long paymentId;
     private Double amount;
-    private Currency currency;
+    private String currency;
 }
