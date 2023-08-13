@@ -1,12 +1,15 @@
 package faang.school.paymentservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
-
-import java.util.Map;
 
 @Data
 public class CurrencyData {
-    private String currency;
-    private Double exchangeRate;
-    private Map<String, Double> currencyMap;
+
+    @JsonProperty("CharCode")
+    private String charCode;
+
+    @JsonProperty("Value")
+    private double value;
 }

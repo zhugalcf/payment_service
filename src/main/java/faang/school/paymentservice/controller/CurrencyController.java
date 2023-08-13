@@ -1,27 +1,33 @@
 package faang.school.paymentservice.controller;
 
-import faang.school.paymentservice.currencyRateFetcherService.CurrencyService;
+import faang.school.paymentservice.currencyRateFetcherService.CurrencyServiceForFeign;
+import faang.school.paymentservice.dto.CurrencyApiResponse;
 import faang.school.paymentservice.dto.PaymentDto;
 import faang.school.paymentservice.validate.CurrencyValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/v1/currency")
 @RequiredArgsConstructor
 public class CurrencyController {
-    private final CurrencyService currencyService;
+    private final CurrencyServiceForFeign currencyServiceForFeign;
     private final CurrencyValidator currencyValidator;
 
-    @GetMapping("/new")
-    public ResponseEntity<Map<String, Double>> fetchCurrencyRates() {
-        Map<String, Double> currencyRates = currencyService.fetchAndSaveCurrencyData();
-        return ResponseEntity.ok(currencyRates);
+    @PostMapping("/fetch-currency")
+    public ResponseEntity<CurrencyApiResponse> fetchCurrencyData() {
+        CurrencyApiResponse response = currencyServiceForFeign.fetchAndSaveCurrencyData();
+        if (response != null) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
     }
 
     public PaymentDto convertCurrency(PaymentDto paymentDto) { // вызов метода в сервисе для обработки платежа
