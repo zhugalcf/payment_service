@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping("/v1/currency")
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class CurrencyController {
     }
 
     public PaymentDto convertCurrency(PaymentDto paymentDto) { // вызов метода в сервисе для обработки платежа
-        currencyValidator.validateCurrency(paymentDto);
+        currencyValidator.validateCurrency(paymentDto); // мне не нужен был
         return paymentDto;
     }
 }

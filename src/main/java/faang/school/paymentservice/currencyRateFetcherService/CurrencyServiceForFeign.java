@@ -4,14 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import faang.school.paymentservice.dto.CurrencyApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -22,15 +19,13 @@ import java.util.Optional;
 public class CurrencyServiceForFeign {
     private final ExternalServiceClient externalServiceClient;
     private final TextToJsonObjectConverter converter;
-    //private final Map<String, Double> currencyRates = new HashMap<>(); //валюта - курс
-    private final Logger logger = LoggerFactory.getLogger(CurrencyServiceForFeign.class);
 
     @Retryable(maxAttempts = 2, backoff = @Backoff(delay = 1000)) // повторить до 2-х раз и с задержкой 1 сек.
     public CurrencyApiResponse fetchAndSaveCurrencyData() {
         String responseText = externalServiceClient.getLatestCurrencyRates();
-        CurrencyApiResponse response = null;
+        CurrencyApiResponse response;
         try {
-            response = converter.convert(responseText, CurrencyApiResponse.class);
+            response = converter.convert(responseText);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -39,15 +34,12 @@ public class CurrencyServiceForFeign {
 
         Optional.ofNullable(response)
                 .map(CurrencyApiResponse::getValute)
-                .ifPresent(valute -> {
-                    currencyRates.clear();
-                    valute.forEach((currencyCode, currencyData) -> {
-                        currencyRates.put(currencyData.getCharCode(), currencyData.getValue());
-                        logger.info("Currency rates fetched and updated.");
-                    });
-                });
+                .ifPresent(valute -> valute.forEach((currencyCode, currencyData) -> {
+                    currencyRates.put(currencyData.getCharCode(), currencyData.getValue());
+                    log.info("Currency rates fetched and updated.");
+                }));
         if (currencyRates.isEmpty()) {
-            logger.warn("Failed to fetch currency rates!");
+            log.warn("Failed to fetch currency rates!");
         }
         return response;
     }
