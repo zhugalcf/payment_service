@@ -44,7 +44,7 @@ public class CurrencyServiceForFeignTest {
                 }""";
 
         doReturn(responseText).when(externalServiceClient).getLatestCurrencyRates();
-        doReturn(new CurrencyApiResponse()).when(textToJsonObjectConverter).convert(responseText);
+        doReturn(new CurrencyApiResponse()).when(textToJsonObjectConverter).convert(responseText, CurrencyApiResponse.class);
 
         CurrencyApiResponse response = currencyServiceForFeign.fetchAndSaveCurrencyData();
 

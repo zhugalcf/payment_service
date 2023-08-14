@@ -2,7 +2,6 @@ package faang.school.paymentservice.currencyRateFetcherService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import faang.school.paymentservice.dto.CurrencyApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,9 +12,9 @@ import org.springframework.stereotype.Service;
 public class TextToJsonObjectConverter {
     private final ObjectMapper objectMapper;
 
-    public CurrencyApiResponse convert(String text) throws JsonProcessingException {
+    public <T> T convert(String text, Class<T> targetType) throws JsonProcessingException {
             log.info("Text to be converted: " + text);
-            CurrencyApiResponse convertedObject = objectMapper.readValue(text, CurrencyApiResponse.class);
+            T convertedObject = objectMapper.readValue(text, targetType);
             log.info("Converted object: " + convertedObject);
             return convertedObject;
     }

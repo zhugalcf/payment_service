@@ -25,7 +25,7 @@ public class CurrencyServiceForFeign {
         String responseText = externalServiceClient.getLatestCurrencyRates();
         CurrencyApiResponse response;
         try {
-            response = converter.convert(responseText);
+            response = converter.convert(responseText, CurrencyApiResponse.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
