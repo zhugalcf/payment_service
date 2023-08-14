@@ -19,6 +19,7 @@ import java.util.Optional;
 public class CurrencyServiceForFeign {
     private final ExternalServiceClient externalServiceClient;
     private final TextToJsonObjectConverter converter;
+    private final Map<String, Double> currencyRates = new HashMap<>();
 
     @Retryable(maxAttempts = 2, backoff = @Backoff(delay = 1000)) // повторить до 2-х раз и с задержкой 1 сек.
     public CurrencyApiResponse fetchAndSaveCurrencyData() {
@@ -30,16 +31,15 @@ public class CurrencyServiceForFeign {
             throw new RuntimeException(e);
         }
 
-        Map<String, Double> currencyRates = new HashMap<>();
-
         Optional.ofNullable(response)
                 .map(CurrencyApiResponse::getValute)
                 .ifPresent(valute -> valute.forEach((currencyCode, currencyData) -> {
                     currencyRates.put(currencyData.getCharCode(), currencyData.getValue());
+                    currencyRates.forEach((key, value) -> System.out.println(key + ": " + value));
                     log.info("Currency rates fetched and updated.");
                 }));
         if (currencyRates.isEmpty()) {
-            log.warn("Failed to fetch currency rates!");
+            log.info("Failed to fetch currency rates!");
         }
         return response;
     }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class CurrencyData {
+public class CurrencyMap {
 
     @JsonProperty("CharCode")
     private String charCode;

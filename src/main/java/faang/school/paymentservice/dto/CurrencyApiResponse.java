@@ -22,5 +22,5 @@ public class CurrencyApiResponse {
     private Timestamp timestamp;
 
     @JsonProperty("Valute")
-    private Map<String, CurrencyData> valute;
+    private Map<String, CurrencyMap> valute;
 }
