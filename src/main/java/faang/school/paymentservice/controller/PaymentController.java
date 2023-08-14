@@ -1,10 +1,16 @@
 package faang.school.paymentservice.controller;
 
+import faang.school.paymentservice.dto.Currency;
 import faang.school.paymentservice.dto.PaymentRequest;
+
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Random;
 import faang.school.paymentservice.dto.PaymentResponse;
 import faang.school.paymentservice.dto.PaymentStatus;
+import faang.school.paymentservice.service.converter.CurrencyConverterService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +19,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/payments")
 public class PaymentController {
+    private final CurrencyConverterService currencyConverterService;
+
+    @PostMapping("/convert")
+    public ResponseEntity<HttpStatus> convertCurrency(Enum<Currency> currentCurrency, Enum<Currency> targetCurrency, BigDecimal moneyAmount) {
+        currencyConverterService.convert(currentCurrency, targetCurrency, moneyAmount);
+        return ResponseEntity.accepted().build();
+    }
 
     @PostMapping("/payment")
     public ResponseEntity<PaymentResponse> sendPayment(@RequestBody @Validated PaymentRequest dto) {

@@ -4,3 +4,6 @@ server:
 logging:
   level:
     root: info
+
+
+my-app-id: ca800d6c1f28496a9461bd842d20b919
