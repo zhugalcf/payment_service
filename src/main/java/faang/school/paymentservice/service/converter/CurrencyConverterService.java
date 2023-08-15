@@ -1,30 +1,33 @@
 package faang.school.paymentservice.service.converter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.paymentservice.client.OpenExchangeRatesClient;
 import faang.school.paymentservice.dto.Currency;
 import faang.school.paymentservice.dto.OpenExchangeRatesResponseDto;
+import faang.school.paymentservice.exception.CurrencyNotSupportedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CurrencyConverterService {
     private final OpenExchangeRatesClient openExchangeRatesClient;
+    private final ObjectMapper objectMapper;
 
-    public ResponseEntity<OpenExchangeRatesResponseDto> convert(Enum<Currency> currentCurrency, Enum<Currency> targetCurrency, BigDecimal moneyAmount) {
-            OpenExchangeRatesResponseDto response = openExchangeRatesClient.getLatestExchangeRates();
+    public BigDecimal convertCurrencyWithCommission(Currency currentCurrency, Currency targetCurrency, BigDecimal moneyAmount) throws JsonProcessingException {
+        String json = openExchangeRatesClient.getLatestExchangeRates();
+        OpenExchangeRatesResponseDto ratesApiResponse = objectMapper.readValue(json, OpenExchangeRatesResponseDto.class);
 
-            Map<Currency, BigDecimal> rates = response.getRates().stream()
-                    .filter(rate -> rate.containsKey(currentCurrency) && rate.containsKey(targetCurrency))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Exchange rate data not available for the specified currency pair"));
+        if (!ratesApiResponse.getRates().containsKey(currentCurrency.toString()) || !ratesApiResponse.getRates().containsKey(targetCurrency.toString())) {
+            throw new CurrencyNotSupportedException(currentCurrency + " is not supported");
+        }
+        BigDecimal targetCurrencyRate = ratesApiResponse.getRates().get(targetCurrency.toString());
 
-            return ResponseEntity.ok(response);
+        return targetCurrencyRate.multiply(moneyAmount).multiply(BigDecimal.valueOf(1.01));
     }
 }

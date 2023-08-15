@@ -6,8 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.sql.Timestamp;
 import java.util.Map;
 
 @Data
@@ -17,7 +16,7 @@ import java.util.Map;
 public class OpenExchangeRatesResponseDto {
     private String disclaimer;
     private String license;
-    private LocalDateTime timestamp;
+    private Timestamp timestamp;
     private Currency base;
-    private List<Map<Currency, BigDecimal>> rates;
+    private Map<String, BigDecimal> rates;
 }

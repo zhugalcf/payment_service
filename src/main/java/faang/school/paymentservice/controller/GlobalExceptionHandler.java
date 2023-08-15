@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import faang.school.paymentservice.exception.CurrencyNotSupportedException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -25,6 +29,13 @@ public class GlobalExceptionHandler {
                         error -> ((FieldError) error).getField(),
                         error -> Objects.requireNonNullElse(error.getDefaultMessage(), ""))
                 );
+    }
+
+    @ExceptionHandler(CurrencyNotSupportedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCurrencyNotSupportedException(CurrencyNotSupportedException e) {
+        log.error("Currency not supported {}", e.getMessage());
+        return new ErrorResponse("We don't support such currency conversion" );
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
