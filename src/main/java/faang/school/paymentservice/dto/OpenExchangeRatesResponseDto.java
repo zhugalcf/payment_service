@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -18,5 +19,5 @@ public class OpenExchangeRatesResponseDto {
     private String license;
     private LocalDateTime timestamp;
     private Currency base;
-    private Map<Currency, BigDecimal> rates;
+    private List<Map<Currency, BigDecimal>> rates;
 }

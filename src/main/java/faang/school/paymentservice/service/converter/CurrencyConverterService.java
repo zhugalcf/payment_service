@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,10 +18,13 @@ public class CurrencyConverterService {
     private final OpenExchangeRatesClient openExchangeRatesClient;
 
     public ResponseEntity<OpenExchangeRatesResponseDto> convert(Enum<Currency> currentCurrency, Enum<Currency> targetCurrency, BigDecimal moneyAmount) {
-        OpenExchangeRatesResponseDto latestExchangeRates =
-                openExchangeRatesClient.getLatestExchangeRates();
+            OpenExchangeRatesResponseDto response = openExchangeRatesClient.getLatestExchangeRates();
 
+            Map<Currency, BigDecimal> rates = response.getRates().stream()
+                    .filter(rate -> rate.containsKey(currentCurrency) && rate.containsKey(targetCurrency))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Exchange rate data not available for the specified currency pair"));
 
-        return ResponseEntity.accepted().body(latestExchangeRates);
+            return ResponseEntity.ok(response);
     }
 }
