@@ -1,4 +1,4 @@
-package faang.school.paymentservice.currencyRateFetcherService;
+package faang.school.paymentservice.scheduler;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

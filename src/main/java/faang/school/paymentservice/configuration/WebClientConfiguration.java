@@ -1,4 +1,4 @@
-package faang.school.paymentservice.currencyRateFetcherService;
+package faang.school.paymentservice.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

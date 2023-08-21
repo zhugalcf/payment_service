@@ -1,9 +1,9 @@
 package faang.school.paymentservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import faang.school.paymentservice.currencyRateFetcherService.CurrencyServiceForFeign;
-import faang.school.paymentservice.currencyRateFetcherService.ExternalServiceClient;
-import faang.school.paymentservice.currencyRateFetcherService.TextToJsonObjectConverter;
+import faang.school.paymentservice.service.CurrencyServiceForFeign;
+import faang.school.paymentservice.service.ExternalServiceClient;
+import faang.school.paymentservice.mapper.TextToJsonObjectMapper;
 import faang.school.paymentservice.dto.CurrencyApiResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ public class CurrencyServiceForFeignTest {
     private ExternalServiceClient externalServiceClient;
 
     @Mock
-    private TextToJsonObjectConverter textToJsonObjectConverter;
+    private TextToJsonObjectMapper textToJsonObjectConverter;
 
     @InjectMocks
     private CurrencyServiceForFeign currencyServiceForFeign;

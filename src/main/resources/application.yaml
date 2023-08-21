@@ -9,3 +9,13 @@ currency:
   rate:
     fetch:
       cron: 0 3 * * * *  #обновление каждый день в 3 ночи
+
+external-service:
+  url: https://www.cbr-xml-daily.ru
+
+spring:
+  application:
+    retry:
+      maxAttempts: 2
+      backoff:
+        delay: 1000

@@ -1,7 +1,8 @@
-package faang.school.paymentservice.currencyRateFetcherService;
+package faang.school.paymentservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import faang.school.paymentservice.dto.CurrencyApiResponse;
+import faang.school.paymentservice.mapper.TextToJsonObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
@@ -18,10 +19,10 @@ import java.util.Optional;
 @Slf4j
 public class CurrencyServiceForFeign {
     private final ExternalServiceClient externalServiceClient;
-    private final TextToJsonObjectConverter converter;
+    private final TextToJsonObjectMapper converter;
     private final Map<String, Double> currencyRates = new HashMap<>();
 
-    @Retryable(maxAttempts = 2, backoff = @Backoff(delay = 1000)) // повторить до 2-х раз и с задержкой 1 сек.
+    @Retryable
     public CurrencyApiResponse fetchAndSaveCurrencyData() {
         String responseText = externalServiceClient.getLatestCurrencyRates();
         CurrencyApiResponse response;

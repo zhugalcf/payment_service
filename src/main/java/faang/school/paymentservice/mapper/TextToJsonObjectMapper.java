@@ -1,4 +1,4 @@
-package faang.school.paymentservice.currencyRateFetcherService;
+package faang.school.paymentservice.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TextToJsonObjectConverter {
+public class TextToJsonObjectMapper {
     private final ObjectMapper objectMapper;
 
     public <T> T convert(String text, Class<T> targetType) throws JsonProcessingException {
