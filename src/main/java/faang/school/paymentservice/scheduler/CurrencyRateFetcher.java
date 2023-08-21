@@ -4,10 +4,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CurrencyRateFetcher { //запускается по cron выражению в yaml
+public class CurrencyRateFetcher {
 
     @Scheduled(cron = "${currency.rate.fetch.cron}")
     public void fetchCurrencyRates() {
-        System.out.println("Fetching currency rates...");
     }
 }

@@ -9,18 +9,9 @@ import java.util.Map;
 @Data
 public class CurrencyApiResponse {
 
-    @JsonProperty("Date")
-    private String date;
-
-    @JsonProperty("PreviousDate")
-    private String previousDate;
-
-    @JsonProperty("PreviousURL")
-    private String previousURL;
-
     @JsonProperty("Timestamp")
-    private Timestamp timestamp;
+    private Timestamp time_stamp;
 
     @JsonProperty("Valute")
-    private Map<String, CurrencyMap> valute;
+    private Map<String, CurrencyValue> valute;
 }

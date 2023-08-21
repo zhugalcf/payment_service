@@ -1,7 +1,7 @@
 package faang.school.paymentservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import faang.school.paymentservice.service.CurrencyServiceForFeign;
+import faang.school.paymentservice.service.CurrencyService;
 import faang.school.paymentservice.service.ExternalServiceClient;
 import faang.school.paymentservice.mapper.TextToJsonObjectMapper;
 import faang.school.paymentservice.dto.CurrencyApiResponse;
@@ -24,7 +24,7 @@ public class CurrencyServiceForFeignTest {
     private TextToJsonObjectMapper textToJsonObjectConverter;
 
     @InjectMocks
-    private CurrencyServiceForFeign currencyServiceForFeign;
+    private CurrencyService currencyServiceForFeign;
 
     @Test
     public void fetchAndSaveCurrencyDataTest() throws JsonProcessingException {
