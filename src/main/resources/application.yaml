@@ -7,3 +7,6 @@ logging:
 
 
 my-app-id: ca800d6c1f28496a9461bd842d20b919
+
+open-exchange-rates:
+  url: https://openexchangerates.org/api

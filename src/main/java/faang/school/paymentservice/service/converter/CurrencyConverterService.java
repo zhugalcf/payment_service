@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 public class CurrencyConverterService {
     private final OpenExchangeRatesClient openExchangeRatesClient;
     private final ObjectMapper objectMapper;
-    private static final double COMMISSION_RATE = 1.01;
+    private static final double COMMISSION_RATE = 0.01;
 
     public BigDecimal convertCurrencyWithCommission(Currency currentCurrency, Currency targetCurrency, BigDecimal moneyAmount) throws JsonProcessingException {
         String json = openExchangeRatesClient.getLatestExchangeRates();

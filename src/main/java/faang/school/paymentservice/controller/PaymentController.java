@@ -26,18 +26,15 @@ import java.util.Random;
 public class PaymentController {
     private final CurrencyConverterService currencyConverterService;
 
-    @GetMapping("/convert")
-    public ResponseEntity<BigDecimal> convertCurrency(
-            @RequestParam Currency currentCurrency,
-            @RequestParam Currency targetCurrency,
-            @RequestParam BigDecimal moneyAmount
-    ) throws JsonProcessingException {
-        BigDecimal convertedAmount = currencyConverterService.convertCurrencyWithCommission(currentCurrency, targetCurrency, moneyAmount);
-        return ResponseEntity.ok(convertedAmount);
-    }
 
     @PostMapping("/payment")
-    public ResponseEntity<PaymentResponse> sendPayment(@RequestBody @Validated PaymentRequest dto) {
+    public ResponseEntity<PaymentResponse> sendPayment(@RequestBody @Validated PaymentRequest dto,
+                                                       @RequestParam Currency currentCurrency,
+                                                       @RequestParam Currency targetCurrency,
+                                                       @RequestParam BigDecimal moneyAmount) throws JsonProcessingException {
+        BigDecimal convertedAmount = currencyConverterService.convertCurrencyWithCommission(currentCurrency,
+                targetCurrency, moneyAmount);
+
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
         String formattedSum = decimalFormat.format(dto.amount());
         int verificationCode = new Random().nextInt(1000, 10000);
