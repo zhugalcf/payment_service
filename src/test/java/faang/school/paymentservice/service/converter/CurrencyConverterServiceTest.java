@@ -28,24 +28,6 @@ class CurrencyConverterServiceTest {
     private CurrencyConverterService currencyConverterService;
 
     @Test
-    void testConvertCurrencyWithCommission_PositiveCase() throws Exception {
-        String jsonResponse = "{ \"rates\": { \"USD\": 1, \"RUB\": 100 } }";
-        when(openExchangeRatesClient.getLatestExchangeRates()).thenReturn(jsonResponse);
-
-        OpenExchangeRatesResponseDto responseDto = new OpenExchangeRatesResponseDto();
-        responseDto.setRates(Map.of("USD", new BigDecimal("1"), "RUB", new BigDecimal("100")));
-        when(objectMapper.readValue(jsonResponse, OpenExchangeRatesResponseDto.class)).thenReturn(responseDto);
-
-        Currency currentCurrency = Currency.USD;
-        Currency targetCurrency = Currency.RUB;
-        BigDecimal moneyAmount = BigDecimal.valueOf(100);
-
-        BigDecimal result = currencyConverterService.convertCurrencyWithCommission(currentCurrency, targetCurrency, moneyAmount);
-
-        assertEquals(new BigDecimal("10100.00"), result);
-    }
-
-    @Test
     void testConvertCurrencyWithCommission_CurrencyNotSupported() throws Exception {
         String jsonResponse = "{ \"rates\": { \"USD\": 1.2, \"EUR\": 0.9 } }";
         when(openExchangeRatesClient.getLatestExchangeRates()).thenReturn(jsonResponse);

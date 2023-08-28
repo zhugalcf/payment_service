@@ -6,6 +6,7 @@ import faang.school.paymentservice.dto.PaymentRequest;
 import faang.school.paymentservice.dto.PaymentResponse;
 import faang.school.paymentservice.dto.PaymentStatus;
 import faang.school.paymentservice.service.converter.CurrencyConverterService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,7 +29,7 @@ public class PaymentController {
 
 
     @PostMapping("/payment")
-    public ResponseEntity<PaymentResponse> sendPayment(@RequestBody @Validated PaymentRequest dto,
+    public ResponseEntity<PaymentResponse> sendPayment(@RequestBody @Valid PaymentRequest dto,
                                                        @RequestParam Currency currentCurrency,
                                                        @RequestParam Currency targetCurrency,
                                                        @RequestParam BigDecimal moneyAmount) throws JsonProcessingException {

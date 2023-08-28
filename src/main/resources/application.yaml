@@ -6,7 +6,7 @@ logging:
     root: info
 
 
-my-app-id: ca800d6c1f28496a9461bd842d20b919
+my-app-id: ${appId} # replace with your app id
 
 open-exchange-rates:
   url: https://openexchangerates.org/api
