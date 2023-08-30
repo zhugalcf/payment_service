@@ -15,9 +15,7 @@ public class TextToJsonObjectMapper {
     public <T> T convert(String text, Class<T> targetType) {
         try {
             log.info("Text to be converted: " + text);
-            T convertedObject = objectMapper.readValue(text, targetType);
-            log.info("Converted object: " + convertedObject);
-            return convertedObject;
+            return objectMapper.readValue(text, targetType);
         } catch (JsonProcessingException e) {
             log.error("Error while converting response text to object: " + e.getMessage());
             return null;

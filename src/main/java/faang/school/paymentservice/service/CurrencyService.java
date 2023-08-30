@@ -28,7 +28,7 @@ public class CurrencyService {
         Optional.ofNullable(response)
                 .map(CurrencyApiResponse::getValute)
                 .ifPresent(valute -> valute.forEach((currencyCode, currencyData) -> {
-                    currencyRates.put(currencyData.getChar_code(), currencyData.getValue());
+                    currencyRates.put(currencyData.getCharCode(), currencyData.getValue());
                     log.info("Currency rates fetched and updated.");
                 }));
         if (currencyRates.isEmpty()) {

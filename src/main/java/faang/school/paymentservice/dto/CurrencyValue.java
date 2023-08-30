@@ -7,7 +7,7 @@ import lombok.Data;
 public class CurrencyValue {
 
     @JsonProperty("CharCode")
-    private String char_code;
+    private String charCode;
 
     @JsonProperty("Value")
     private double value;
