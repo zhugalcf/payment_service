@@ -21,7 +21,7 @@ public class Balance {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "account_id", unique = true)
+    @JoinColumn(name = "account_number", referencedColumnName = "account_number", unique = true)
     private Account account;
 
     @Column(name="authorization_balance", nullable = false)

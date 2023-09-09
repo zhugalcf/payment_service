@@ -10,7 +10,9 @@ import faang.school.paymentservice.model.Account;
 import faang.school.paymentservice.model.Balance;
 import faang.school.paymentservice.repository.AccountRepository;
 import faang.school.paymentservice.repository.BalanceRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,15 +20,19 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentService {
     private final AccountRepository accountRepository;
     private final BalanceRepository balanceRepository;
     private final AccountMapper accountMapper;
     private final BalanceMapper balanceMapper;
 
+    @Transactional
     public AccountDto createAccount(Long accountNumber){
         Account account = Account.builder().accountNumber(accountNumber).build();
         Account savedAccount = accountRepository.save(account);
+        log.info(account.getId() + " is saved to db");
+
         Balance balance = Balance.builder()
                 .account(savedAccount)
                 .authorizationBalance(new BigDecimal(0))
@@ -36,6 +42,8 @@ public class PaymentService {
                 .balanceVersion(0L)
                 .build();
         balanceRepository.save(balance);
+        log.info(balance.toString() + " is saved to db");
+
         return accountMapper.toDto(savedAccount);
     }
 
@@ -45,6 +53,7 @@ public class PaymentService {
         return balanceMapper.toDto(balance);
     }
 
+    @Transactional
     public BalanceDto updateBalance(UpdateBalanceDto updateBalanceDto){
         Balance balance = balanceRepository.findById(updateBalanceDto.getId())
                 .orElseThrow(() -> new BalanceNotFoundException(updateBalanceDto.getId()));
@@ -57,6 +66,8 @@ public class PaymentService {
         balance.setBalanceVersion(balance.getBalanceVersion() + 1);
         balance.setCurrentBalance(sum);
         balance.setUpdated(LocalDateTime.now());
+
+        log.info(balance + " is updated");
 
         return balanceMapper.toDto(balanceRepository.save(balance));
     }
