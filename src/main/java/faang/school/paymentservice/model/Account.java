@@ -18,5 +18,5 @@ public class Account {
     private Long id;
 
     @Column(name = "account_number", unique = true)
-    private String accountNumber;
+    private Long accountNumber;
 }
