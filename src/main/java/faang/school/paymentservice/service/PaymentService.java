@@ -55,8 +55,8 @@ public class PaymentService {
 
     @Transactional
     public BalanceDto updateBalance(UpdateBalanceDto updateBalanceDto){
-        Balance balance = balanceRepository.findById(updateBalanceDto.getId())
-                .orElseThrow(() -> new BalanceNotFoundException(updateBalanceDto.getId()));
+        Balance balance = balanceRepository.findById(updateBalanceDto.getBalanceId())
+                .orElseThrow(() -> new BalanceNotFoundException(updateBalanceDto.getBalanceId()));
 
         BigDecimal currentBalance = balance.getCurrentBalance();
         BigDecimal deposit = updateBalanceDto.getDeposit();
@@ -66,9 +66,10 @@ public class PaymentService {
         balance.setBalanceVersion(balance.getBalanceVersion() + 1);
         balance.setCurrentBalance(sum);
         balance.setUpdated(LocalDateTime.now());
+        balanceRepository.save(balance);
 
         log.info(balance + " is updated");
 
-        return balanceMapper.toDto(balanceRepository.save(balance));
+        return balanceMapper.toDto(balance);
     }
 }

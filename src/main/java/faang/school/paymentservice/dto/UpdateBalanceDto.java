@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Builder
 public class UpdateBalanceDto {
     @NotNull
-    private Long id;
+    private Long balanceId;
     @NotNull
     private BigDecimal deposit;
 }
