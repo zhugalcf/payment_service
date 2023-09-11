@@ -1,10 +1,12 @@
 package faang.school.paymentservice.controller;
 
-import faang.school.paymentservice.dto.PaymentRequest;
+import faang.school.paymentservice.dto.*;
+
 import java.text.DecimalFormat;
 import java.util.Random;
-import faang.school.paymentservice.dto.PaymentResponse;
-import faang.school.paymentservice.dto.PaymentStatus;
+
+import faang.school.paymentservice.service.payment.PaymentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class PaymentController {
+
+    private final PaymentService paymentService;
 
     @PostMapping("/payment")
     public ResponseEntity<PaymentResponse> sendPayment(@RequestBody @Validated PaymentRequest dto) {
@@ -33,5 +38,10 @@ public class PaymentController {
                 dto.currency(),
                 message)
         );
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<PaymentDto> createPayment(@RequestBody @Validated InvoiceDto dto) {
+        return ResponseEntity.ok(paymentService.createPayment(dto));
     }
 }
