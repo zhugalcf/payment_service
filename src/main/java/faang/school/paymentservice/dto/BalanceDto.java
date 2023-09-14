@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +15,7 @@ public class BalanceDto {
     private Long accountNumber;
     private BigDecimal authorizationBalance;
     private BigDecimal currentBalance;
-    private LocalDateTime created;
-    private LocalDateTime updated;
+    private ZonedDateTime  created;
+    private ZonedDateTime updated;
     private Long balanceVersion;
 }
