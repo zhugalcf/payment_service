@@ -1,8 +1,8 @@
 package faang.school.paymentservice.model;
 
 public enum AccountType {
-    DEBIT("debit"),
-    SAVINGS("savings");
+    DEBIT("8888"),
+    SAVINGS("9999");
 
     private final String value;
 

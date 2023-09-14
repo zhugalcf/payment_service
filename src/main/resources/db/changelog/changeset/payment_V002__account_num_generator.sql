@@ -7,5 +7,5 @@ CREATE TABLE free_account_numbers (
 CREATE TABLE account_number_sequence (
    id                    SMALLSERIAL PRIMARY KEY,
    type                  VARCHAR(255) NOT NULL,
-   current_number        NUMERIC NOT NULL
+   current_number        NUMERIC NOT NULL DEFAULT 0
 );

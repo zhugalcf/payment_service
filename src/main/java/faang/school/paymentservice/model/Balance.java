@@ -38,6 +38,7 @@ public class Balance {
     @Column(nullable = false)
     private LocalDateTime updated;
 
+    @Version
     @Column(name="balance_version", nullable = false)
     private Long balanceVersion;
 }
