@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +22,7 @@ public class Balance {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "account_id", unique = true)
+    @JoinColumn(name = "account_number", referencedColumnName = "account_number", unique = true)
     private Account account;
 
     @Column(name="authorization_balance", nullable = false)
@@ -32,11 +33,11 @@ public class Balance {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private LocalDateTime created;
+    private ZonedDateTime created;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private LocalDateTime updated;
+    private ZonedDateTime updated;
 
     @Column(name="balance_version", nullable = false)
     private Long balanceVersion;
