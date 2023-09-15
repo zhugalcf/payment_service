@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +50,7 @@ public class PaymentServiceTest {
     void setUp(){
         accountNumber = 1l;
         account = Account.builder().accountNumber(accountNumber).build();
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         balance = createBalance(1L, account, now, new BigDecimal(0), new BigDecimal(0), 0L);
         updateBalanceDto = createUpdateDto(1L, new BigDecimal(300));
     }
@@ -109,7 +110,7 @@ public class PaymentServiceTest {
         assertEquals(ex.getMessage(), MessageFormat.format("Balance {0} not found", balance.getId()));
     }
 
-    private Balance createBalance(Long id, Account account, LocalDateTime time, BigDecimal authBalance, BigDecimal currentBlance,
+    private Balance createBalance(Long id, Account account, ZonedDateTime time, BigDecimal authBalance, BigDecimal currentBlance,
                                   Long balanceVersion){
         return Balance.builder()
                 .id(id)
