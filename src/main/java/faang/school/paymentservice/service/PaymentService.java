@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -31,32 +32,30 @@ public class PaymentService {
     public AccountDto createAccount(Long accountNumber){
         Account account = Account.builder().accountNumber(accountNumber).build();
         Account savedAccount = accountRepository.save(account);
-        log.info(account.getId() + " is saved to db");
+        log.info("Account {} is saved to db", account.getId());
 
         Balance balance = Balance.builder()
                 .account(savedAccount)
                 .authorizationBalance(new BigDecimal(0))
                 .currentBalance(new BigDecimal(0))
-                .created(LocalDateTime.now())
-                .updated(LocalDateTime.now())
+                .created(ZonedDateTime.now())
+                .updated(ZonedDateTime.now())
                 .balanceVersion(0L)
                 .build();
         balanceRepository.save(balance);
-        log.info(balance.toString() + " is saved to db");
+        log.info("Balance {} is saved to db", balance);
 
         return accountMapper.toDto(savedAccount);
     }
 
     public BalanceDto getBalance(Long id){
-        Balance balance = balanceRepository.findById(id)
-                .orElseThrow(() -> new BalanceNotFoundException(id));
+        Balance balance = findBalance(id);
         return balanceMapper.toDto(balance);
     }
 
     @Transactional
     public BalanceDto updateBalance(UpdateBalanceDto updateBalanceDto){
-        Balance balance = balanceRepository.findById(updateBalanceDto.getBalanceId())
-                .orElseThrow(() -> new BalanceNotFoundException(updateBalanceDto.getBalanceId()));
+        Balance balance = findBalance(updateBalanceDto.getId());
 
         BigDecimal currentBalance = balance.getCurrentBalance();
         BigDecimal deposit = updateBalanceDto.getDeposit();
@@ -65,11 +64,15 @@ public class PaymentService {
 
         balance.setBalanceVersion(balance.getBalanceVersion() + 1);
         balance.setCurrentBalance(sum);
-        balance.setUpdated(LocalDateTime.now());
-        balanceRepository.save(balance);
+        balance.setUpdated(ZonedDateTime.now());
 
-        log.info(balance + " is updated");
+        log.info("Balance {} is updated", balance);
 
-        return balanceMapper.toDto(balance);
+        return balanceMapper.toDto(balanceRepository.save(balance));
+    }
+
+    private Balance findBalance(Long id){
+        return balanceRepository.findById(id)
+                .orElseThrow(() -> new BalanceNotFoundException(id));
     }
 }
