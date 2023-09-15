@@ -34,15 +34,7 @@ public class PaymentService {
         Account savedAccount = accountRepository.save(account);
         log.info("Account {} is saved to db", account.getId());
 
-        Balance balance = Balance.builder()
-                .account(savedAccount)
-                .authorizationBalance(new BigDecimal(0))
-                .currentBalance(new BigDecimal(0))
-                .created(ZonedDateTime.now())
-                .updated(ZonedDateTime.now())
-                .balanceVersion(0L)
-                .build();
-        balanceRepository.save(balance);
+        Balance balance = balanceRepository.save(createBalance(savedAccount));
         log.info("Balance {} is saved to db", balance);
 
         return accountMapper.toDto(savedAccount);
@@ -55,7 +47,7 @@ public class PaymentService {
 
     @Transactional
     public BalanceDto updateBalance(UpdateBalanceDto updateBalanceDto){
-        Balance balance = findBalance(updateBalanceDto.getId());
+        Balance balance = findBalance(updateBalanceDto.getBalanceId());
 
         BigDecimal currentBalance = balance.getCurrentBalance();
         BigDecimal deposit = updateBalanceDto.getDeposit();
@@ -74,5 +66,15 @@ public class PaymentService {
     private Balance findBalance(Long id){
         return balanceRepository.findById(id)
                 .orElseThrow(() -> new BalanceNotFoundException(id));
+    }
+
+    private Balance createBalance(Account account){
+        return Balance.builder()
+                .account(account)
+                .authorizationBalance(new BigDecimal(0))
+                .currentBalance(new BigDecimal(0))
+                .created(ZonedDateTime.now())
+                .updated(ZonedDateTime.now())
+                .build();
     }
 }
