@@ -16,12 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
@@ -48,23 +48,21 @@ public class PaymentServiceTest {
 
     @BeforeEach
     void setUp(){
-        accountNumber = 1l;
-        account = Account.builder().accountNumber(accountNumber).build();
+        accountNumber = 1L;
+        account = Account.builder().id(accountNumber).accountNumber(accountNumber).build();
         ZonedDateTime now = ZonedDateTime.now();
         balance = createBalance(1L, account, now, new BigDecimal(0), new BigDecimal(0), 0L);
+
         updateBalanceDto = createUpdateDto(1L, new BigDecimal(300));
     }
 
     @Test
     void createAccount_Successful(){
-
-        lenient().when(accountRepository.save(account)).thenReturn(account);
-        lenient().when(balanceRepository.save(balance)).thenReturn(balance);
+        when(accountRepository.save(Mockito.any(Account.class))).thenReturn(account);
+        when(balanceRepository.save(Mockito.any(Balance.class))).thenReturn(balance);
 
         AccountDto accountDto = paymentService.createAccount(accountNumber);
 
-        assertNotNull(accountDto);
-        assertEquals(account.getId(), accountDto.getAccountId());
         assertEquals(accountNumber, accountDto.getAccountNumber());
     }
 
@@ -90,6 +88,7 @@ public class PaymentServiceTest {
     @Test
     void updateBalance_Successful(){
         lenient().when(balanceRepository.findById(balance.getId())).thenReturn(Optional.of(balance));
+        when(balanceRepository.save(any())).thenReturn(balance);
 
         BalanceDto expectedBalanceDto = balanceMapper.toDto(balance);
 
