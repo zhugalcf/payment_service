@@ -103,6 +103,8 @@ public class PaymentServiceTest {
     @Test
     void updateBalance_NotFound(){
         when(balanceRepository.findById(balance.getId())).thenReturn(Optional.empty());
+        lenient().when(balanceRepository.save(any())).thenReturn(balance);
+
 
         BalanceNotFoundException ex = assertThrows(
                 BalanceNotFoundException.class, () -> paymentService.updateBalance(updateBalanceDto));
