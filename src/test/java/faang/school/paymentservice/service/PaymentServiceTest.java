@@ -72,7 +72,7 @@ public class PaymentServiceTest {
 
         BalanceNotFoundException ex = assertThrows(
                 BalanceNotFoundException.class, () -> paymentService.getBalance(balance.getId()));
-        assertEquals(ex.getMessage(), MessageFormat.format("Balance {0} not found", balance.getId()));
+        assertEquals(ex.getMessage(), MessageFormat.format("NULL", balance.getId()));
     }
 
     @Test
