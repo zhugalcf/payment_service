@@ -1,13 +1,12 @@
 package faang.school.paymentservice.exception;
 
+import lombok.AllArgsConstructor;
+
 import java.text.MessageFormat;
 
+@AllArgsConstructor
 public class BalanceNotFoundException extends RuntimeException{
     private Long id;
-
-    public BalanceNotFoundException(Long id){
-        this.id = id;
-    }
 
     @Override
     public String getMessage() {

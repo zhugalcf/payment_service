@@ -21,26 +21,27 @@ public class FreeAccountNumber {
     @EmbeddedId
     private FreeAccountNumberKey id;
 
-    @Column(name="type", nullable = false, insertable = false, updatable = false)
-    private AccountType accountType;
+    @Column(name = "account_type", nullable = false, insertable = false, updatable = false)
+    private String accountType;
 
     @Column(name = "account_number", nullable = false, insertable = false, updatable = false)
     private BigInteger accountNumber;
 
     @Embeddable
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class FreeAccountNumberKey implements Serializable {
-        @Column(name = "type", nullable = false)
-        private AccountType accountType;
+        @Column(name = "account_type", nullable = false)
+        private String accountType;
 
         @Column(name = "account_number", nullable = false)
         private BigInteger accountNumber;
+        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof FreeAccountNumberKey)) return false;
+            if (o == null || getClass() != o.getClass()) return false;
             FreeAccountNumberKey that = (FreeAccountNumberKey) o;
-            return Objects.equals(accountType, that.accountType) &&
-                    Objects.equals(accountNumber, that.accountNumber);
+            return accountType == that.accountType && Objects.equals(accountNumber, that.accountNumber);
         }
 
         @Override
