@@ -24,4 +24,7 @@ public class AccountNumbersSequence {
 
     @Column(name="current_number", nullable = false)
     BigInteger currentNumber;
+
+    @Version
+    private Integer version;
 }

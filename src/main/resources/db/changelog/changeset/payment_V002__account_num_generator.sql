@@ -7,7 +7,8 @@ CREATE TABLE free_account_numbers (
 CREATE TABLE account_number_sequence (
    id                    SMALLSERIAL PRIMARY KEY,
    account_type          VARCHAR(255) NOT NULL,
-   current_number        NUMERIC NOT NULL DEFAULT 0
+   current_number        NUMERIC NOT NULL DEFAULT 0,
+   version               INTEGER NOT NULL DEFAULT 0
 );
 
 INSERT INTO account_number_sequence (account_type, current_number)
