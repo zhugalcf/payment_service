@@ -2,9 +2,12 @@ package faang.school.paymentservice.repository;
 
 import faang.school.paymentservice.model.FreeAccountNumber;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.Optional;
 
 @Repository
@@ -23,5 +26,12 @@ public interface FreeAccountNumberRepository extends JpaRepository<FreeAccountNu
         )
         RETURNING account_type, account_number;
         """)
-    Optional<FreeAccountNumber> getFreeAccountNumber(String accountType);
+    Optional<FreeAccountNumber> getFreeAccountNumber(@Param("accountType") String accountType);
+
+    @Query(nativeQuery = true, value = """
+            SELECT COUNT(*)
+            FROM free_account_numbers
+            WHERE account_type = :accountType
+            """)
+    BigInteger getFreeAccountNumberCountByType(@Param("accountType") String accountType);
 }

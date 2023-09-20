@@ -13,10 +13,4 @@ import java.util.Optional;
 public interface AccountNumbersSequenceRepository extends JpaRepository<AccountNumbersSequence, Long> {
     Optional<AccountNumbersSequence> findByAccountType(String accountType);
 
-    @Query(nativeQuery = true, value = """
-            UPDATE account_number_sequence 
-            SET current_number = current_number + 1
-            WHERE account_type = :accountType
-            RETURNING current_number""")
-    Optional<BigInteger>  incrementCounter(@Param("accountType") String accountType);
 }
