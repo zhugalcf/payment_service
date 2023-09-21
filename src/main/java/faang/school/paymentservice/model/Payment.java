@@ -38,6 +38,7 @@ public class Payment {
     private BigDecimal amount;
 
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
     @Temporal(TemporalType.TIMESTAMP)
