@@ -18,8 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 @Service
@@ -29,7 +28,6 @@ public class FreeAccountNumberService {
     private final FreeAccountNumberRepository freeAccountNumberRepository;
     private final AccountNumbersSequenceRepository accountNumberSequenceRepository;
     private final static int MINIMAL_FREE_ACCOUNT_NUM = 5;
-    private final static int coreCount = Runtime.getRuntime().availableProcessors();
 
     public void getFreeNumber(AccountType accountType, Consumer<String> action) {
         Optional<FreeAccountNumber> freeAccountNumber = freeAccountNumberRepository.getFreeAccountNumber(accountType.getValue());
@@ -39,12 +37,15 @@ public class FreeAccountNumberService {
         }
         BigInteger count = freeAccountNumberRepository.getFreeAccountNumberCountByType(accountType.getValue());
         if (count.compareTo(BigInteger.valueOf(MINIMAL_FREE_ACCOUNT_NUM)) < 0) {
-            generateNewAccountNumbers(2, accountType);
-            log.info("Less then {} accounts left. New accounts generated", MINIMAL_FREE_ACCOUNT_NUM);
-
+            generateNewAccountNumbers(2, accountType)
+                    .exceptionally(ex -> {
+                        log.error("An error occurred while generating new account numbers: " + ex.getMessage());
+                        throw new RuntimeException(ex);
+                    })
+                    .thenRun(() -> log.info("Less than {} accounts left. New accounts generated", MINIMAL_FREE_ACCOUNT_NUM));
         }
 
-        action.accept(MessageFormat.format("Generated number {}", freeAccountNumber.get().getAccountNumber()));
+        action.accept(MessageFormat.format("Generated number {0}", freeAccountNumber.get().getAccountNumber().toString()));
     }
 
     @Transactional
@@ -52,7 +53,7 @@ public class FreeAccountNumberService {
             retryFor = PersistenceException.class,
             maxAttempts = 5,
             backoff = @Backoff(delay = 3000))
-    public synchronized void generateFreeAccNumber(AccountType accountType){
+    private synchronized void generateFreeAccNumber(AccountType accountType){
         AccountNumbersSequence accountNumbersSequence =
                 accountNumberSequenceRepository.findByAccountType(accountType.getValue())
                         .orElseThrow(() -> new TypeNotFoundException(accountType));
@@ -61,7 +62,7 @@ public class FreeAccountNumberService {
         accountNumbersSequence.setCurrentNumber(currentCount);
 
         accountNumberSequenceRepository.save(accountNumbersSequence);
-
+        
         String accountNumber = String.format("%s%020d", accountType.getValue(), currentCount);
 
         FreeAccountNumber freeAccountNumber = FreeAccountNumber.builder()
@@ -84,13 +85,11 @@ public class FreeAccountNumberService {
         log.info("Initial free account numbers generated");
     }
 
-    private void generateNewAccountNumbers(int number, AccountType accountType){
-        ExecutorService executorService = Executors.newFixedThreadPool(coreCount);
-
-        for (int i = 0; i < number; i++) {
-            executorService.submit(() -> generateFreeAccNumber(accountType));
-        }
-
-        executorService.shutdown();
+    private CompletableFuture<Void> generateNewAccountNumbers(int number, AccountType accountType) {
+        return CompletableFuture.runAsync(() -> {
+            for (int i = 0; i < number; i++) {
+                generateFreeAccNumber(accountType);
+            }
+        });
     }
 }
