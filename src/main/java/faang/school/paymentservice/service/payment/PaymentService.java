@@ -28,14 +28,13 @@ public class PaymentService {
         }
 
         Payment payment = createPayment(dto);
-        paymentRepository.save(payment);
         log.info("Created payment: {}", payment);
 
         return paymentMapper.toDto(payment);
     }
 
     private Payment createPayment(InvoiceDto dto) {
-        return Payment.builder()
+        Payment payment = Payment.builder()
                 .senderAccount(dto.getSenderAccount())
                 .receiverAccount(dto.getReceiverAccount())
                 .currency(dto.getCurrency())
@@ -43,6 +42,7 @@ public class PaymentService {
                 .status(PaymentStatus.AUTHORIZATION)
                 .idempotencyKey(dto.getIdempotencyKey())
                 .build();
+        return paymentRepository.save(payment);
     }
 
     private Optional<Payment> getPaymentIfExist(InvoiceDto dto) {
