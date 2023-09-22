@@ -24,11 +24,11 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "sender_account_id", nullable = false)
-    private Long senderAccountId;
+    @Column(name = "sender_account", nullable = false)
+    private String senderAccountId;
 
-    @Column(name = "receiver_account_id", nullable = false)
-    private Long receiverAccountId;
+    @Column(name = "receiver_account", nullable = false)
+    private String receiverAccount;
 
     @Column(name = "currency", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -38,6 +38,7 @@ public class Payment {
     private BigDecimal amount;
 
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
     @Temporal(TemporalType.TIMESTAMP)
