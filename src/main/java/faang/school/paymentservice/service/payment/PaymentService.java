@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -49,6 +50,18 @@ public class PaymentService {
          log.info("Payment cleared: {}", payment);
 
          return paymentMapper.toDto(payment);
+    }
+
+    public PaymentDto schedule(Long paymentId, LocalDateTime scheduledAt) {
+        Payment payment = checkPaymentExist(paymentId);
+        payment = schedulePayment(payment, scheduledAt);
+
+        return paymentMapper.toDto(payment);
+    }
+
+    private Payment schedulePayment(Payment payment, LocalDateTime scheduledAt) {
+        payment.setScheduledAt(scheduledAt);
+        return paymentRepository.save(payment);
     }
 
     private Payment clearPayment(Payment payment) {
