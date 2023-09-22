@@ -6,6 +6,7 @@ import faang.school.paymentservice.dto.PaymentStatus;
 import faang.school.paymentservice.mapper.PaymentMapper;
 import faang.school.paymentservice.model.Payment;
 import faang.school.paymentservice.repository.PaymentRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,14 +29,32 @@ public class PaymentService {
         }
 
         Payment payment = createPayment(dto);
-        paymentRepository.save(payment);
         log.info("Created payment: {}", payment);
 
         return paymentMapper.toDto(payment);
     }
 
+    public PaymentDto cancel(Long paymentId) {
+        Optional<Payment> optionalPayment = paymentRepository.findById(paymentId);
+        if (optionalPayment.isEmpty()) {
+            throw new EntityNotFoundException("Payment with id %d not found".formatted(paymentId));
+        }
+        Payment payment = cancelPayment(optionalPayment.get());
+        log.info("Cancelled payment: {}", payment);
+
+        return paymentMapper.toDto(payment);
+    }
+
+    private Payment cancelPayment(Payment payment) {
+        payment.setStatus(PaymentStatus.CANCELED);
+        if (payment.getScheduledAt() != null) {
+            payment.setScheduledAt(null);
+        }
+        return paymentRepository.save(payment);
+    }
+
     private Payment createPayment(InvoiceDto dto) {
-        return Payment.builder()
+        Payment payment = Payment.builder()
                 .senderAccount(dto.getSenderAccount())
                 .receiverAccount(dto.getReceiverAccount())
                 .currency(dto.getCurrency())
@@ -43,6 +62,7 @@ public class PaymentService {
                 .status(PaymentStatus.AUTHORIZATION)
                 .idempotencyKey(dto.getIdempotencyKey())
                 .build();
+        return paymentRepository.save(payment);
     }
 
     private Optional<Payment> getPaymentIfExist(InvoiceDto dto) {
