@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Builder
 public class PaymentDto {
     private Long id;
-    private Long senderAccountId;
-    private Long receiverAccountId;
+    private String senderAccount;
+    private String receiverAccount;
     private Currency currency;
     private BigDecimal amount;
     private PaymentStatus status;

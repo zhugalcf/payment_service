@@ -7,6 +7,7 @@ import java.util.Random;
 
 import faang.school.paymentservice.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,8 @@ public class PaymentController {
 
     @PostMapping("/create")
     public ResponseEntity<PaymentDto> createPayment(@RequestBody @Validated InvoiceDto dto) {
-        return ResponseEntity.ok(paymentService.createPayment(dto));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(paymentService.create(dto));
     }
 }

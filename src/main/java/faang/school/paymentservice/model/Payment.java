@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class Payment {
     private Long id;
 
     @Column(name = "sender_account", nullable = false)
-    private String senderAccountId;
+    private String senderAccount;
 
     @Column(name = "receiver_account", nullable = false)
     private String receiverAccount;
@@ -40,6 +41,9 @@ public class Payment {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
+
+    @Column(name = "idempotency_key")
+    private UUID idempotencyKey;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "scheduled_at")
