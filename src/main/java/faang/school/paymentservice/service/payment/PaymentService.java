@@ -3,7 +3,9 @@ package faang.school.paymentservice.service.payment;
 import faang.school.paymentservice.dto.InvoiceDto;
 import faang.school.paymentservice.dto.PaymentDto;
 import faang.school.paymentservice.dto.PaymentStatus;
+import faang.school.paymentservice.dto.payment.PaymentEvent;
 import faang.school.paymentservice.mapper.PaymentMapper;
+import faang.school.paymentservice.messaging.PaymentEventPublisher;
 import faang.school.paymentservice.model.Payment;
 import faang.school.paymentservice.repository.PaymentRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,6 +25,8 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
 
     private final PaymentMapper paymentMapper;
+
+    private final PaymentEventPublisher eventPublisher;
 
     public PaymentDto create(InvoiceDto dto) {
         Optional<Payment> optionalPayment = getPaymentIfExist(dto);
@@ -78,6 +82,8 @@ public class PaymentService {
 
     private Payment clearPayment(Payment payment) {
         payment.setStatus(PaymentStatus.CLEARED);
+
+        sendEvent(payment);
         return paymentRepository.save(payment);
     }
 
@@ -91,6 +97,8 @@ public class PaymentService {
         if (payment.getScheduledAt() != null) {
             payment.setScheduledAt(null);
         }
+
+        sendEvent(payment);
         return paymentRepository.save(payment);
     }
 
@@ -103,11 +111,19 @@ public class PaymentService {
                 .status(PaymentStatus.AUTHORIZATION)
                 .idempotencyKey(dto.getIdempotencyKey())
                 .build();
+
+        sendEvent(payment);
         return paymentRepository.save(payment);
     }
 
     private Optional<Payment> getPaymentIfExist(InvoiceDto dto) {
         return paymentRepository
                 .findByIdempotencyKey(dto.getIdempotencyKey().toString());
+    }
+
+    private void sendEvent(Payment payment) {
+        PaymentEvent event = paymentMapper.toEvent(payment);
+        eventPublisher.publish(event);
+        log.info("Sent event: {}", event);
     }
 }
