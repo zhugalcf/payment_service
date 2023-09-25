@@ -3,6 +3,7 @@ package faang.school.paymentservice.scheduling.payment;
 import faang.school.paymentservice.model.Payment;
 import faang.school.paymentservice.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentScheduler {
 
     private final PaymentService service;
@@ -22,11 +24,13 @@ public class PaymentScheduler {
     @Scheduled(cron = "${scheduling.gather-payment}")
     public void getScheduledPayment() {
         List<Payment> payments = service.getScheduledPayment();
+        log.info("Got scheduled payments: {}", payments);
 
         for (Payment payment : payments) {
             paymentTaskScheduler.schedule(() ->
                             service.clear(payment),
                     payment.getScheduledAt().toInstant(ZoneOffset.UTC));
+            log.info("Payment scheduled: {}", payment);
         }
     }
 }
