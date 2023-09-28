@@ -11,6 +11,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: user
     password: password
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      channels:
+        payment-request: payment-request
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -24,3 +30,13 @@ spring:
       hibernate:
         format_sql: true
 
+thread-pools:
+  payment:
+    core: 10
+    max: 15
+    alive-time: 5000
+    queue: 10000
+scheduler:
+  force-request:
+    period: 10
+    limit: 10000

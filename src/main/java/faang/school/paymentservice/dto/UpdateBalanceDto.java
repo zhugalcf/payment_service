@@ -15,4 +15,10 @@ public class UpdateBalanceDto {
     private Long balanceId;
     @NotNull
     private BigDecimal deposit;
+
+    public enum PaymentStatus {
+        PENDING,
+        ACCEPTED,
+        CANCELED
+    }
 }

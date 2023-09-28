@@ -5,6 +5,7 @@ import faang.school.paymentservice.dto.*;
 import java.text.DecimalFormat;
 import java.util.Random;
 
+import faang.school.paymentservice.model.BalanceAudit;
 import faang.school.paymentservice.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/payment")
 @Validated
 public class PaymentController {
     private final PaymentService paymentService;
@@ -51,5 +52,20 @@ public class PaymentController {
     @PutMapping("/balance/{balanceId}")
     public BalanceDto updateBalance(@Valid UpdateBalanceDto updateBalanceDto){
         return paymentService.updateBalance(updateBalanceDto);
+    }
+
+    @PostMapping("/create-request")
+    public ResponseEntity<BalanceAudit> createRequestForPayment(@RequestBody @Validated CreatePaymentRequest dto){
+        return ResponseEntity.ok(paymentService.createRequestForPayment(dto));
+    }
+
+    @PutMapping("cancel-request/{balanceAuditId}")
+    public ResponseEntity<BalanceAudit> cancelRequestForPayment(@PathVariable Long balanceAuditId){
+        return ResponseEntity.ok(paymentService.cancelRequestForPayment(balanceAuditId));
+    }
+
+    @PutMapping("force-request/{balanceAuditId}")
+    public ResponseEntity<BalanceAudit> forceRequestForPayment(@PathVariable Long balanceAuditId){
+        return ResponseEntity.ok(paymentService.forceRequestForPayment(balanceAuditId));
     }
 }
