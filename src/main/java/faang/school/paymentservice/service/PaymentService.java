@@ -80,7 +80,7 @@ public class PaymentService {
 
     @Transactional
     @Async(value = "paymentPool")
-    public BalanceAudit createRequestForPayment(CreatePaymentRequest createPaymentRequest){
+    public BalanceAudit createRequestForPayment(CreatePaymentRequest createPaymentRequest, Long userId){
         Balance senderBalance = findBalance(createPaymentRequest.senderBalanceNumber());
         Balance getterBalance = findBalance(createPaymentRequest.getterBalanceNumber());
         BigDecimal deposit = createPaymentRequest.amount();
@@ -94,7 +94,7 @@ public class PaymentService {
                 .clearScheduledAt(createPaymentRequest.clearScheduledAt())
                 .build();
         balanceAudit = balanceAuditRepository.save(balanceAudit);
-        RedisPaymentDto redisPaymentDto = new RedisPaymentDto(senderBalance.getId(), getterBalance.getId(),
+        RedisPaymentDto redisPaymentDto = new RedisPaymentDto(userId, senderBalance.getId(), getterBalance.getId(),
                 deposit, createPaymentRequest.currency(), PaymentStatus.PENDING);
         paymentRequestPublisher.publish(redisPaymentDto);
         return balanceAudit;
@@ -102,12 +102,12 @@ public class PaymentService {
 
     @Transactional
     @Async(value = "paymentPool")
-    public BalanceAudit cancelRequestForPayment(Long balanceAuditId){
+    public BalanceAudit cancelRequestForPayment(Long balanceAuditId, Long userId){
         BalanceAudit balanceAudit = balanceAuditRepository.findById(balanceAuditId)
                 .orElseThrow(() -> new EntityNotFoundException("There is no such request in DB"));
         balanceAudit.setPaymentStatus(PaymentStatus.CANCELED);
         balanceAudit = balanceAuditRepository.save(balanceAudit);
-        RedisPaymentDto redisPaymentDto = new RedisPaymentDto(balanceAudit.getSenderBalance().getId(),
+        RedisPaymentDto redisPaymentDto = new RedisPaymentDto(userId, balanceAudit.getSenderBalance().getId(),
                 balanceAudit.getGetterBalance().getId(), balanceAudit.getAmount(),
                 balanceAudit.getCurrency(), PaymentStatus.CANCELED);
         paymentRequestPublisher.publish(redisPaymentDto);
@@ -116,12 +116,12 @@ public class PaymentService {
 
     @Transactional
     @Async(value = "paymentPool")
-    public BalanceAudit forceRequestForPayment(Long balanceAuditId){
+    public BalanceAudit forceRequestForPayment(Long balanceAuditId, Long userId){
         BalanceAudit balanceAudit = balanceAuditRepository.findById(balanceAuditId)
                 .orElseThrow(() -> new EntityNotFoundException("There is no such request in DB"));
         balanceAudit.setPaymentStatus(PaymentStatus.SUCCESS);
         balanceAudit = balanceAuditRepository.save(balanceAudit);
-        RedisPaymentDto redisPaymentDto = new RedisPaymentDto(balanceAudit.getSenderBalance().getId(),
+        RedisPaymentDto redisPaymentDto = new RedisPaymentDto(userId, balanceAudit.getSenderBalance().getId(),
                 balanceAudit.getGetterBalance().getId(), balanceAudit.getAmount(),
                 balanceAudit.getCurrency(), PaymentStatus.SUCCESS);
         paymentRequestPublisher.publish(redisPaymentDto);
@@ -135,7 +135,8 @@ public class PaymentService {
         pendingRequests.forEach(balanceAudit -> {
             balanceAudit.setPaymentStatus(PaymentStatus.SUCCESS);
             balanceAudit = balanceAuditRepository.save(balanceAudit);
-            RedisPaymentDto redisPaymentDto = new RedisPaymentDto(balanceAudit.getSenderBalance().getId(),
+            RedisPaymentDto redisPaymentDto = new RedisPaymentDto(balanceAudit.getUserId(),
+                    balanceAudit.getSenderBalance().getId(),
                     balanceAudit.getGetterBalance().getId(), balanceAudit.getAmount(),
                     balanceAudit.getCurrency(), PaymentStatus.SUCCESS);
             paymentRequestPublisher.publish(redisPaymentDto);

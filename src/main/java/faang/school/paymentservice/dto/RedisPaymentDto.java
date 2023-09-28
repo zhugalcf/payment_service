@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 
 public record RedisPaymentDto (
         @NotNull
+        Long userId,
+        @NotNull
         long senderBalanceNumber,
         @NotNull
         long getterBalanceNumber,

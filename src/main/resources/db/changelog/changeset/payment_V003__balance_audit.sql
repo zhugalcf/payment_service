@@ -1,5 +1,6 @@
 create table balance_audit(
 id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+user_id bigint not null,
 sender_balance_id bigint not null references balance(id),
 getter_balance_id bigint not null references balance(id),
 lock_value varchar(244) not NULL,
