@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/changeset/payment_V001__initial.sql
   - include:
       file: db/changelog/changeset/payment_V002__account_num_generator.sql
+  - include:
+      file: db/changelog/changeset/payment_V003__balance_audit.sql
