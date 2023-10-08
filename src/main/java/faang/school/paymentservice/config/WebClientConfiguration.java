@@ -1,4 +1,4 @@
-package faang.school.paymentservice.configuration;
+package faang.school.paymentservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,5 +1,6 @@
 package faang.school.paymentservice.service;
 
+import faang.school.paymentservice.client.ExternalServiceClient;
 import faang.school.paymentservice.dto.CurrencyApiResponse;
 import faang.school.paymentservice.mapper.TextToJsonObjectMapper;
 import lombok.RequiredArgsConstructor;
