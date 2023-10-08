@@ -32,11 +32,11 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "owner_account_id", nullable = false, length = 20)
-    private String ownerAccountId;
+    @Column(name = "owner_account_number", nullable = false, length = 20)
+    private String ownerAccountNumber;
 
-    @Column(name = "receiver_account_id", nullable = false, length = 20)
-    private String receiverAccountId;
+    @Column(name = "receiver_account_number", nullable = false, length = 20)
+    private String receiverAccountNumber;
 
     @Column(name = "status")
     private PaymentStatus status;

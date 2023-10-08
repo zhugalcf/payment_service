@@ -17,6 +17,7 @@ import feign.FeignException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -134,8 +135,8 @@ public class PaymentService {
     }
 
     private boolean checkPaymentWithSameUUID(PaymentDto newPayment, Payment oldPayment) {
-        if (newPayment.getOwnerAccountNumber() == oldPayment.getOwnerAccountId()
-                && newPayment.getReceiverAccountNumber() == oldPayment.getReceiverAccountId()
+        if (newPayment.getOwnerAccountNumber() == oldPayment.getOwnerAccountNumber()
+                && newPayment.getReceiverAccountNumber() == oldPayment.getReceiverAccountNumber()
                 && newPayment.getAmount() == oldPayment.getAmount()
                 && newPayment.getCurrency() == oldPayment.getCurrency()) {
             return true;

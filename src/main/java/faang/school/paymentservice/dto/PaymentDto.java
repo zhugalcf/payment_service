@@ -31,7 +31,7 @@ public class PaymentDto {
     private BigDecimal amount;
     @NotNull(message = "Unknown currency")
     private Currency currency;
-    @NotEmpty(message = "UUID can't be empty")
+    @NotNull(message = "UUID can't be null")
     private UUID idempotencyKey;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
