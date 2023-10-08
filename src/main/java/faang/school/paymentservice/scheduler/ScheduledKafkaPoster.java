@@ -33,7 +33,6 @@ public class ScheduledKafkaPoster {
         List<OutboxPayment> readyToPost = outboxRepository.findOutboxReadyToPost();
         for (OutboxPayment outbox: readyToPost) {
             kafkaProducer.sendPaymentOperational(paymentTopic, outbox.getStatus().name(), outbox.getIdempotencyKey());
-            outbox.setPosted(true);
         }
         log.info("Scheduled post_payment_to_kafka was executed");
     }

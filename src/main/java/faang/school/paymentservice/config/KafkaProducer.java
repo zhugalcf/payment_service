@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class KafkaProducer {
 
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Async("kafkaThreadPool")
     public void sendMessage(String topicName, Object value) {

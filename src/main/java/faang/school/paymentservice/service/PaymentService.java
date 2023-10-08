@@ -103,8 +103,14 @@ public class PaymentService {
 
     @Transactional
     public void handlePaymentRequest(PaymentResponseDto responseDto) {
-        Payment payment = paymentRepository.findPaymentByIdempotencyKey(responseDto.getIdempotencyKey())
+        UUID idempotencyKey = responseDto.getIdempotencyKey();
+
+        Payment payment = paymentRepository.findPaymentByIdempotencyKey(idempotencyKey)
                 .orElseThrow(() -> new EntityNotFoundException("Payment with this token can't exist"));
+        OutboxPayment outbox = outboxPaymentRepository.findOutboxPaymentByIdempotencyKey(idempotencyKey).orElseThrow(
+                () -> new EntityNotFoundException("Actual payment doesn't exist"));
+
+        outbox.setPosted(true);
         payment.setStatus(responseDto.getStatus());
         log.info("Payment status with id={} has changed to {}", payment.getId(), payment.getStatus().name());
     }
@@ -112,7 +118,7 @@ public class PaymentService {
     private void postRequestToAccountService(PaymentDto paymentDto) {
         try {
             accountService.createPayment(paymentDto);
-            log.info("New payment, id={}, has been posted to account-service", paymentDto.getPaymentId());
+            log.info("New payment, UUID={}, has been posted to account-service", paymentDto.getIdempotencyKey());
         } catch (FeignException e) {
             int exceptionStatus = e.status();
             if (exceptionStatus == 400) {

@@ -14,7 +14,7 @@ CREATE TABLE payment
 CREATE TABLE outbox_payment
 (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY UNIQUE,
-    idempotency_key VARCHAR(64) NOT NULL,
+    idempotency_key UUID NOT NULL,
     status VARCHAR(32)  NOT NULL,
     is_posted BOOLEAN DEFAULT FALSE
 );
