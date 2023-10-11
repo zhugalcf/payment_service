@@ -17,7 +17,6 @@ import feign.FeignException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -56,14 +55,13 @@ public class PaymentService {
                 throw new IdempotencyException("This payment has already been made with other details! Try again!");
             }
             log.info("Payment with UUID={} is idempotency", idempotencyKey);
-        } else {
-            paymentDto.setClearScheduledAt(LocalDateTime.now().plusSeconds(scheduledSeconds));
-            payment = paymentRepository.save(paymentMapper.toEntity(paymentDto));
-            log.info("Payment with UUID={} was saved in DB successfully", idempotencyKey);
+            return payment.getId();
         }
 
-        payment.setStatus(PaymentStatus.PROCESSING);
+        paymentDto.setClearScheduledAt(LocalDateTime.now().plusSeconds(scheduledSeconds));
         paymentDto.setStatus(PaymentStatus.PROCESSING);
+        payment = paymentRepository.save(paymentMapper.toEntity(paymentDto));
+        log.info("Payment with UUID={} was saved in DB successfully", idempotencyKey);
 
         postRequestToAccountService(paymentDto);
         return payment.getId();
@@ -97,7 +95,7 @@ public class PaymentService {
     public String checkPaymentStatus(long paymentId) {
         Payment payment = paymentRepository.findById(paymentId).orElseThrow(
                 () -> new EntityNotFoundException("This payment doesn't exist"));
-        return String.format("Payment with UUID = {} has been created at {} and has status = {}",
+        return String.format("Payment with UUID = %s has been created at %s and has status = %s",
                 payment.getIdempotencyKey(), payment.getCreatedAt(), payment.getStatus());
     }
 
@@ -141,9 +139,9 @@ public class PaymentService {
     }
 
     private boolean checkPaymentWithSameUUID(PaymentDto newPayment, Payment oldPayment) {
-        if (newPayment.getOwnerAccountNumber() == oldPayment.getOwnerAccountNumber()
-                && newPayment.getReceiverAccountNumber() == oldPayment.getReceiverAccountNumber()
-                && newPayment.getAmount() == oldPayment.getAmount()
+        if (newPayment.getOwnerAccountNumber().equals(oldPayment.getOwnerAccountNumber())
+                && newPayment.getReceiverAccountNumber().equals(oldPayment.getReceiverAccountNumber())
+                && newPayment.getAmount().compareTo(oldPayment.getAmount()) == 0
                 && newPayment.getCurrency() == oldPayment.getCurrency()) {
             return true;
         }
