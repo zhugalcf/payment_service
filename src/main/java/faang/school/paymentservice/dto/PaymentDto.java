@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 public class PaymentDto {
 
-    private Long paymentId;
+    private Long id;
     @NotNull
     @Size(min = 12, max = 20, message = "Length of owner's number must be more then 12 and less then 20")
     private String ownerAccountNumber;

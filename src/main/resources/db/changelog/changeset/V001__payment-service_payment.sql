@@ -21,5 +21,3 @@ CREATE TABLE outbox_payment
 
 CREATE INDEX uuid_index ON payment(idempotency_key);
 CREATE INDEX owner_receiver_index ON payment(owner_account_number, receiver_account_number);
-CREATE INDEX status_index ON payment(status);
-CREATE INDEX posted_index ON outbox_payment(is_posted);

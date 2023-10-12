@@ -4,8 +4,8 @@ import faang.school.paymentservice.client.AccountServiceClient;
 import faang.school.paymentservice.dto.PaymentDto;
 import faang.school.paymentservice.dto.PaymentResponseDto;
 import faang.school.paymentservice.dto.PaymentStatus;
-import faang.school.paymentservice.exception.BalanceException;
-import faang.school.paymentservice.exception.CurrencyException;
+import faang.school.paymentservice.exception.NotEnoughMoneyOnBalanceException;
+import faang.school.paymentservice.exception.IncorrectCurrencyException;
 import faang.school.paymentservice.exception.IdempotencyException;
 import faang.school.paymentservice.exception.PaymentException;
 import faang.school.paymentservice.mapper.PaymentMapper;
@@ -54,7 +54,7 @@ public class PaymentService {
             if (!isIdempotency) {
                 throw new IdempotencyException("This payment has already been made with other details! Try again!");
             }
-            log.info("Payment with UUID={} is idempotency", idempotencyKey);
+            log.info("Payment with UUID={} is idempotency and already been processed", idempotencyKey);
             return payment.getId();
         }
 
@@ -76,7 +76,7 @@ public class PaymentService {
                 .idempotencyKey(payment.getIdempotencyKey())
                 .build();
         outboxPaymentRepository.save(outbox);
-        log.info("Payment status with id={} has changed to {}", paymentId, payment.getStatus().name());
+        log.info("Payment status with token={} has changed to {}", payment.getIdempotencyKey(), payment.getStatus().name());
     }
 
     @Transactional
@@ -88,15 +88,14 @@ public class PaymentService {
                 .idempotencyKey(payment.getIdempotencyKey())
                 .build();
         outboxPaymentRepository.save(outbox);
-        log.info("Payment status with id={} has changed to {}", paymentId, payment.getStatus().name());
+        log.info("Payment status with token={} has changed to {}", payment.getIdempotencyKey(), payment.getStatus().name());
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public String checkPaymentStatus(long paymentId) {
+    public PaymentDto checkPaymentStatus(long paymentId) {
         Payment payment = paymentRepository.findById(paymentId).orElseThrow(
                 () -> new EntityNotFoundException("This payment doesn't exist"));
-        return String.format("Payment with UUID = %s has been created at %s and has status = %s",
-                payment.getIdempotencyKey(), payment.getCreatedAt(), payment.getStatus());
+        return paymentMapper.toDto(payment);
     }
 
     @Transactional
@@ -110,7 +109,7 @@ public class PaymentService {
 
         outbox.setPosted(true);
         payment.setStatus(responseDto.getStatus());
-        log.info("Payment status with id={} has changed to {}", payment.getId(), payment.getStatus().name());
+        log.info("Payment status with token={} has changed to {}", payment.getIdempotencyKey(), payment.getStatus().name());
     }
 
     private void postRequestToAccountService(PaymentDto paymentDto) {
@@ -120,9 +119,9 @@ public class PaymentService {
         } catch (FeignException e) {
             int exceptionStatus = e.status();
             if (exceptionStatus == 400) {
-                throw new CurrencyException("Wrong currency");
+                throw new IncorrectCurrencyException("Wrong currency");
             } else if (exceptionStatus == 403) {
-                throw new BalanceException("There are not enough money in this account balance");
+                throw new NotEnoughMoneyOnBalanceException("There are not enough money in this account balance");
             } else {
                 throw e;
             }

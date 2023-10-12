@@ -31,6 +31,8 @@ spring:
       bootstrap-servers: localhost:9092
       topic: payment_transaction_DMS
       client-id: payment_service_DMS
+      partitions: 1
+      replicas: 1
 
   async:
     thread-pool:

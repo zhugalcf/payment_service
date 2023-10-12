@@ -3,8 +3,8 @@ package faang.school.paymentservice.controller.handler;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
-import faang.school.paymentservice.exception.BalanceException;
-import faang.school.paymentservice.exception.CurrencyException;
+import faang.school.paymentservice.exception.NotEnoughMoneyOnBalanceException;
+import faang.school.paymentservice.exception.IncorrectCurrencyException;
 import faang.school.paymentservice.exception.IdempotencyException;
 import faang.school.paymentservice.exception.PaymentException;
 import feign.FeignException;
@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BalanceException.class)
+    @ExceptionHandler(NotEnoughMoneyOnBalanceException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handleBalanceException(BalanceException e) {
+    public ErrorResponse handleBalanceException(NotEnoughMoneyOnBalanceException e) {
         log.error("BalanceException ", e);
         return ErrorResponse.builder()
                 .dateTime(LocalDateTime.now())
@@ -31,9 +31,9 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(CurrencyException.class)
+    @ExceptionHandler(IncorrectCurrencyException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleCurrencyException(CurrencyException e) {
+    public ErrorResponse handleCurrencyException(IncorrectCurrencyException e) {
         log.error("CurrencyException ", e);
         return ErrorResponse.builder()
                 .dateTime(LocalDateTime.now())

@@ -22,6 +22,10 @@ public class KafkaProducerConfig {
     private String bootstrapServer;
     @Value("${spring.kafka.producer.topic}")
     private String topicNameDMS;
+    @Value("${spring.kafka.producer.partitions}")
+    private int partitionCount;
+    @Value("${spring.kafka.producer.replicas}")
+    private int replicaCount;
 
     @Bean
     public ProducerFactory<String, Object> producerFactory(KafkaProperties kafkaProperties) {
@@ -39,8 +43,8 @@ public class KafkaProducerConfig {
     @Bean
     public NewTopic topicDMS() {
         return TopicBuilder.name(topicNameDMS)
-                .partitions(1)
-                .replicas(1)
+                .partitions(partitionCount)
+                .replicas(replicaCount)
                 .build();
     }
 }

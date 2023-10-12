@@ -152,12 +152,12 @@ public class PaymentServiceTest {
     }
 
     @Test
-    void testCheckPaymentStatus(){
+    void testCheckPaymentStatus() {
+        paymentDto.setId(1L);
+        paymentDto.setStatus(PaymentStatus.PROCESSING);
         when(paymentRepository.findById(PAYMENT_ID)).thenReturn(Optional.ofNullable(payment));
-        String expected = String.format("Payment with UUID = %s has been created at %s and has status = %s",
-                UUID_TOKEN, null, PaymentStatus.PROCESSING);
-        String actual = paymentService.checkPaymentStatus(PAYMENT_ID);
-        assertEquals(expected, actual);
+        PaymentDto actualDto = paymentService.checkPaymentStatus(PAYMENT_ID);
+        assertEquals(paymentDto, actualDto);
     }
 
     @Test

@@ -24,32 +24,32 @@ public class PaymentController {
 
     @PostMapping()
     public Long createPayment(@RequestBody @Validated PaymentDto paymentDto) {
-        log.info("Endpoint <createPayment>, uri='/payment' was called successfully");
+        log.info("Received request to create payment: idempotencyToken={}, receiverAccount={}, senderAccount={}",
+                paymentDto.getIdempotencyKey(), paymentDto.getReceiverAccountNumber(), paymentDto.getOwnerAccountNumber());
         return paymentService.createPayment(paymentDto);
     }
 
     @PutMapping("/{id}/refund")
     public void refundPayment(@PathVariable("id") long paymentId) {
-        log.info("Endpoint <refundPayment>, uri=/payment/{}/refund was called successfully", paymentId);
+        log.info("Received request to refund payment with id={}", paymentId);
         paymentService.refundPayment(paymentId);
     }
 
     @PutMapping("/{id}/clear")
     public void clearPayment(@PathVariable("id") long paymentId) {
-        log.info("Endpoint <clearPayment>, uri=/payment/{}/clear was called successfully", paymentId);
+        log.info("Received request to clear payment with id={}", paymentId);
         paymentService.clearPayment(paymentId);
     }
 
     @GetMapping("/{id}/status")
-    public String checkPaymentStatus(@PathVariable("id") long paymentId) {
-        log.info("Endpoint <checkPaymentStatus>, uri=/payment/{}/status was called successfully", paymentId);
+    public PaymentDto checkPaymentStatus(@PathVariable("id") long paymentId) {
+        log.info("Received request to check status of payment with id={}", paymentId);
         return paymentService.checkPaymentStatus(paymentId);
     }
 
     @PostMapping("/handle/answer")
     public void handlePaymentRequest(@RequestBody @Validated PaymentResponseDto responseDto) {
-        log.info("Endpoint <handlePaymentRequest>, uri=/payment/handle/answer for payment={} was called successfully",
-                responseDto.getIdempotencyKey());
+        log.info("Received request with answer of payment: idempotencyToken={}", responseDto.getIdempotencyKey());
         paymentService.handlePaymentRequest(responseDto);
     }
 }
