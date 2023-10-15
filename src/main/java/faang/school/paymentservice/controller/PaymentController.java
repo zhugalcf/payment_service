@@ -1,37 +1,55 @@
 package faang.school.paymentservice.controller;
 
-import faang.school.paymentservice.dto.PaymentRequest;
-import java.text.DecimalFormat;
-import java.util.Random;
-import faang.school.paymentservice.dto.PaymentResponse;
-import faang.school.paymentservice.dto.PaymentStatus;
-import org.springframework.http.ResponseEntity;
+import faang.school.paymentservice.dto.PaymentDto;
+import faang.school.paymentservice.dto.PaymentResponseDto;
+import faang.school.paymentservice.service.PaymentService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/payment")
+@RequiredArgsConstructor
+@Slf4j
 public class PaymentController {
 
-    @PostMapping("/payment")
-    public ResponseEntity<PaymentResponse> sendPayment(@RequestBody @Validated PaymentRequest dto) {
-        DecimalFormat decimalFormat = new DecimalFormat("0.00");
-        String formattedSum = decimalFormat.format(dto.amount());
-        int verificationCode = new Random().nextInt(1000, 10000);
-        String message = String.format("Dear friend! Thank you for your purchase! " +
-                        "Your payment on %s %s was accepted.",
-                formattedSum, dto.currency().name());
+    private final PaymentService paymentService;
 
-        return ResponseEntity.ok(new PaymentResponse(
-                PaymentStatus.SUCCESS,
-                verificationCode,
-                dto.paymentNumber(),
-                dto.amount(),
-                dto.currency(),
-                message)
-        );
+    @PostMapping()
+    public Long createPayment(@RequestBody @Validated PaymentDto paymentDto) {
+        log.info("Received request to create payment: idempotencyToken={}, receiverAccount={}, senderAccount={}",
+                paymentDto.getIdempotencyKey(), paymentDto.getReceiverAccountNumber(), paymentDto.getOwnerAccountNumber());
+        return paymentService.createPayment(paymentDto);
+    }
+
+    @PutMapping("/{id}/refund")
+    public void refundPayment(@PathVariable("id") long paymentId) {
+        log.info("Received request to refund payment with id={}", paymentId);
+        paymentService.refundPayment(paymentId);
+    }
+
+    @PutMapping("/{id}/clear")
+    public void clearPayment(@PathVariable("id") long paymentId) {
+        log.info("Received request to clear payment with id={}", paymentId);
+        paymentService.clearPayment(paymentId);
+    }
+
+    @GetMapping("/{id}/status")
+    public PaymentDto checkPaymentStatus(@PathVariable("id") long paymentId) {
+        log.info("Received request to check status of payment with id={}", paymentId);
+        return paymentService.checkPaymentStatus(paymentId);
+    }
+
+    @PostMapping("/handle/answer")
+    public void handlePaymentRequest(@RequestBody @Validated PaymentResponseDto responseDto) {
+        log.info("Received request with answer of payment: idempotencyToken={}", responseDto.getIdempotencyKey());
+        paymentService.handlePaymentRequest(responseDto);
     }
 }

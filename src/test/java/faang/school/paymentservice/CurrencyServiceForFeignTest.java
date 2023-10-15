@@ -2,7 +2,7 @@ package faang.school.paymentservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import faang.school.paymentservice.service.CurrencyService;
-import faang.school.paymentservice.service.ExternalServiceClient;
+import faang.school.paymentservice.client.ExternalServiceClient;
 import faang.school.paymentservice.mapper.TextToJsonObjectMapper;
 import faang.school.paymentservice.dto.CurrencyApiResponse;
 import org.junit.jupiter.api.Test;

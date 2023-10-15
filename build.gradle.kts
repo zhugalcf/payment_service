@@ -1,5 +1,3 @@
-import java.util.regex.Pattern.compile
-
 plugins {
     java
     id("org.springframework.boot") version "3.0.6"
@@ -18,12 +16,20 @@ dependencies {
     /**
      * Spring boot starters
      */
+    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation ("org.springframework.retry:spring-retry:1.3.1")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    /**
+     * Database
+     */
+    implementation("org.liquibase:liquibase-core")
+    runtimeOnly("org.postgresql:postgresql")
 
     /**
      * Utils & Logging
@@ -35,6 +41,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation("org.springframework.kafka:spring-kafka:3.0.11")
+    implementation("org.apache.kafka:kafka-clients:3.5.1")
 
     /**
      * Tests

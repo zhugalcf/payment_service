@@ -1,4 +1,4 @@
-package faang.school.paymentservice.service;
+package faang.school.paymentservice.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;

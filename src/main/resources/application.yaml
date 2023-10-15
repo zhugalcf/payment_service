@@ -1,6 +1,46 @@
 server:
   port: 9080
 
+spring:
+  application:
+    retry:
+      maxAttempts: 2
+      backoff:
+        delay: 1000
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: user
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      topic: payment_transaction_DMS
+      client-id: payment_service_DMS
+      partitions: 1
+      replicas: 1
+
+  async:
+    thread-pool:
+      settings:
+        core-pool-size: 4
+        max-pool-size: 8
+        queue-capacity: 100
+
 logging:
   level:
     root: info
@@ -13,9 +53,20 @@ currency:
 external-service:
   url: https://www.cbr-xml-daily.ru
 
-spring:
-  application:
-    retry:
-      maxAttempts: 2
-      backoff:
-        delay: 1000
+feign:
+  client:
+    account-service:
+      host: localhost
+      port: 8090
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+
+payment:
+  scheduler:
+    cron:
+      seconds: 28800 # 8 hours
+      kafka_poster: "0 * * * * *" # every one minute
+      clear_payment: "0 * * * * *" # every one minute
+
